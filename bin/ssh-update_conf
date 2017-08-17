@@ -1,0 +1,12 @@
+#!/bin/bash
+ssh-update_conf()
+{
+  target_path=~/.ssh/config
+  if [[ -e ${target_path} ]]; then
+    rm -f ${target_path}
+  fi
+  echo "ServerAliveInterval 10">$target_path
+  echo "ServerAliveCountMax 5">>$target_path
+  cat ~/.ssh/conf.d/*.conf >>$target_path
+}
+
