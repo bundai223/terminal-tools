@@ -8,5 +8,7 @@ ssh-update_conf()
   echo "ServerAliveInterval 10">$target_path
   echo "ServerAliveCountMax 15">>$target_path
   cat ~/.ssh/conf.d/*.conf >>$target_path
+  chmod 600 $target_path
 }
 
+ssh-update_conf
