@@ -1,0 +1,4 @@
+#!/bin/bash
+
+dotgit=$(git rev-parse --git-dir)
+test $? && rm $dotgit/hooks/* && git init
