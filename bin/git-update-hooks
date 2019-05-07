@@ -1,5 +1,8 @@
 #!/bin/bash
+set -eu
 
 dotgit=$(git rev-parse --git-dir)
 prjroot=$(git rev-parse --show-toplevel)
-test $? && rm $dotgit/hooks/*; cd $prjroot && git init
+
+test $? && rm -f $dotgit/hooks/*;
+cd $prjroot && git init

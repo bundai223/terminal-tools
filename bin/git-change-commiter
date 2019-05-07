@@ -3,7 +3,7 @@ scriptname=$(basename $0)
 
 target_email=$1
 
-dst_author="bundai223"
+dst_author="Daiji NISHIMURA"
 dst_email="bundai223@gmail.com"
 
 usage()
