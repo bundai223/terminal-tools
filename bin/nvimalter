@@ -2,7 +2,7 @@
 
 # which nvim
 if [ -z "$VIMRUNTIME" ]; then
-  echo "nvim $@"
+  nvim $@
 else
-  echo "nvr $@"
+  nvr $@
 fi
