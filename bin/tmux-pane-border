@@ -16,6 +16,6 @@ else
   git_info=""
 fi
 
-directory="#[underscore]#[bg=black,fg=cyan]$1#[default]"
+directory="#[underscore]#[bg=black,fg=cyan]$(echo $1 | path-shortener)#[default]"
 
 echo "$directory$git_info"
