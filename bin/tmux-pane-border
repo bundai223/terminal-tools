@@ -1,21 +1,54 @@
 #!/bin/zsh
 
+directory="$(echo $1 | path-shortener)"
+
+# concat_segment $leftstr $leftbg $rightstr $rightfg $rightbg
+concat_segment() {
+  leftstr=$1
+  leftbg=$2
+  rightstr=$3
+  rightfg=$4
+  rightbg=$5
+  sep=''
+
+  echo "${leftstr} #[fg=${leftbg},bg=${rightbg}]${sep} #[fg=${rightfg}]${rightstr}"
+}
+
+# concat_sub_segment $leftstr $rightstr
+concat_sub_segment() {
+  leftstr=$1
+  rightstr=$2
+  sep=''
+
+  echo ${leftstr} ${sep} ${rightstr}
+}
+
+# finish_segment $leftstr $leftbg $rightbg
+finish_segment() {
+  leftstr=$1
+  leftbg=$2
+  rightbg=$3
+  sep=''
+
+  echo "${leftstr} #[fg=${leftbg},bg=${rightbg}]${sep}#[default]"
+}
+
+no='#[nobold,noitalics,nounderscore]#[fg=brightgreen,bg=colour31]#[fg=colour233,bg=colour31] #P'
+str=$(concat_sub_segment ${no} ${directory})
+
 if git_status=$(cd $1 && git status 2>/dev/null ); then
   git_branch="$(echo $git_status| awk 'NR==1 {print $3}')"
+  str=$(concat_segment ${str} 'colour31' " ${git_branch}" 'black' 'brightgreen')
+
   case $git_status in
-    *Changes\ not\ staged* ) state="#[bg=colour013,fg=black] ± #[fg=default]" ;;
-    *Changes\ to\ be\ committed* ) state="#[bg=blue,fg=black] + #[default]" ;;
-    * ) state="#[bg=green,fg=black] ✔ #[default]" ;;
+    *Changes\ not\ staged* ) str=${str}' #[bold]±' ;;
+    *Changes\ to\ be\ committed* ) str=${str}' ✚ ' ;;
+    * ) str="${str} #[fg=green]✔ " ;;
   esac
-  if [[ $git_branch = "master" ]]; then
-    git_info="#[underscore]#[bg=black,fg=blue] ⭠ ${git_branch} #[default]${state}"
-  else
-    git_info="#[underscore]#[bg=black,fg=colour014] ⭠ ${git_branch} #[default]${state}"
-  fi
+
+  str=$(finish_segment ${str} 'brightgreen' 'brightgreen')
 else
-  git_info=""
+  str=$(finish_segment $str 'colour31' 'brightgreen')
 fi
 
-directory="$(echo $1 | path-shortener)#[default]"
-
-echo "#[fg=colour233,bg=colour31,nobold,noitalics,nounderscore] #P  $directory$git_info"
+echo $str
