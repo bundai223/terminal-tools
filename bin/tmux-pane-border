@@ -36,7 +36,7 @@ finish_segment() {
 no='#[nobold,noitalics,nounderscore]#[fg=brightgreen,bg=colour31]#[fg=colour233,bg=colour31] #P'
 str=$(concat_sub_segment ${no} ${directory})
 
-if git_status=$(cd $1 && git status 2>/dev/null ); then
+if git_status=$(cd $1 && git --no-optional-locks status 2>/dev/null ); then
   git_branch="$(echo $git_status| awk 'NR==1 {print $3}')"
   str=$(concat_segment ${str} 'colour31' " ${git_branch}" 'black' 'brightgreen')
 
