@@ -1,6 +1,14 @@
 #!/bin/zsh
 
-directory="$(echo $1 | path-shortener)"
+p=$1
+is_active=$2
+
+directory="$(echo $p | path-shortener)"
+
+active_pane_bg='brightgreen'
+inactive_pane_bg='black'
+vcs_fg='brightgreen'
+vcs_bg='black'
 
 # concat_segment $leftstr $leftbg $rightstr $rightfg $rightbg
 concat_segment() {
@@ -23,22 +31,39 @@ concat_sub_segment() {
   echo ${leftstr} ${sep} ${rightstr}
 }
 
-# finish_segment $leftstr $leftbg $rightbg
-finish_segment() {
-  leftstr=$1
-  leftbg=$2
-  rightbg=$3
+# start_segments $active $rightstr $rightfg $rightbg $leftbg_active $leftbg_inactive
+start_segments() {
+  active=$1
+  rightstr=$2
+  rightfg=$3
+  rightbg=$4
+  leftbg_active=$5
+  leftbg_inactive=$6
+  [ "$active" = "0" ] && leftbg=$leftbg_inactive || leftbg=$leftbg_active
+  sep=''
+
+  echo "#[nobold,noitalics,nounderscore]#[fg=${leftbg},bg=${rightbg}]${sep}#[fg=${rightfg},bg=${rightbg}] ${rightstr}"
+}
+
+# finish_segments $active $leftstr $leftbg $rightbg_active $rightbg_inactive
+finish_segments() {
+  active=$1
+  leftstr=$2
+  leftbg=$3
+  rightbg_active=$4
+  rightbg_inactive=$5
+  [ "$active" = "0" ] && rightbg=$rightbg_inactive || rightbg=$rightbg_active
   sep=''
 
   echo "${leftstr} #[fg=${leftbg},bg=${rightbg}]${sep}#[default]"
 }
 
-no='#[nobold,noitalics,nounderscore]#[fg=brightgreen,bg=colour31]#[fg=colour233,bg=colour31] #P'
+no=$(start_segments $is_active '#P' 'colour233' 'colour31' $active_pane_bg $inactive_pane_bg)
 str=$(concat_sub_segment ${no} ${directory})
 
 if git_status=$(cd $1 && git --no-optional-locks status 2>/dev/null ); then
   git_branch="$(echo $git_status| awk 'NR==1 {print $3}')"
-  str=$(concat_segment ${str} 'colour31' " ${git_branch}" 'black' 'brightgreen')
+  str=$(concat_segment ${str} 'colour31' " ${git_branch}" $vcs_fg $vcs_bg)
 
   case $git_status in
     *Changes\ not\ staged* ) str=${str}' #[bold]±' ;;
@@ -46,9 +71,9 @@ if git_status=$(cd $1 && git --no-optional-locks status 2>/dev/null ); then
     * ) str="${str} #[fg=green]✔ " ;;
   esac
 
-  str=$(finish_segment ${str} 'brightgreen' 'brightgreen')
+  str=$(finish_segments ${is_active} ${str} $vcs_bg $active_pane_bg $inactive_pane_bg)
 else
-  str=$(finish_segment $str 'colour31' 'brightgreen')
+  str=$(finish_segments ${is_active} $str 'colour31' $active_pane_bg $inactive_pane_bg)
 fi
 
 echo $str
