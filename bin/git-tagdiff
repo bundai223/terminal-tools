@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# 対象を指定する
+TAG1=$1
+TAG2=$2
+TARGET_PATH=${3:-.}
+
+git diff --diff-filter=AMCRD $TAG1 $TAG2 $TARGET_PATH
