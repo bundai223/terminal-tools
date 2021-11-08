@@ -1,4 +1,11 @@
 #!/bin/bash
+set -eu
+
 target_host=$1
-ssh-keygen -R $1
-ssh-keyscan $1>>~/.ssh/known_hosts
+
+ssh-keygen -R $target_host 1>/dev/null
+ip=$(getent hosts ${target_host} | awk '{print $1}')
+if [ -n "${ip}" ]; then
+  ssh-keygen -R $ip 1>/dev/null
+fi
+ssh-keyscan $target_host>>~/.ssh/known_hosts
