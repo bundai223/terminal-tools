@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+# vim: set ft=zsh:
+
+function zsh-startuptime-slower-than-default() {
+  local time_rc
+  time_rc=$((TIMEFMT="%mE"; time zsh -i -c exit) &> /dev/stdout)
+  # time_norc=$((TIMEFMT="%mE"; time zsh -df -i -c exit) &> /dev/stdout)
+  # compinit is slow
+  local time_norc
+  time_norc=$((TIMEFMT="%mE"; time zsh -df -i -c "autoload -Uz compinit && compinit -C; exit") &> /dev/stdout)
+  echo "my zshrc: ${time_rc}\ndefault zsh: ${time_norc}\n"
+
+  local result
+  result=$(scale=3 echo "${time_rc%ms} / ${time_norc%ms}" | bc)
+  echo "${result}x slower your zsh than the default."
+}
+zsh-startuptime-slower-than-default

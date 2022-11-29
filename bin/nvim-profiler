@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function nvim-profiler() {
+  local file=$1
+  local time_file
+  time_file=$(mktemp --suffix "_nvim_startuptime.txt")
+  echo "output: $time_file"
+  time nvim --headless --startuptime $time_file -c q $file
+  tail -n 1 $time_file | cut -d " " -f1 | tr -d "\n" && echo " [ms]\n"
+  cat $time_file | sort -n -k 2 | tail -n 20
+}
+nvim-profiler
