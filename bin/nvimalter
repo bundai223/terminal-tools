@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# tmux rename-window "nvim-proxy"
+
 # which nvim
 if [ -z "$VIMRUNTIME" ]; then
   nvim $@
