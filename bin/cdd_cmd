@@ -1,0 +1,16 @@
+#!/bin/bash
+# sourceして使ってね
+# cdする都合上
+
+_cdd_arg_target=${1:-.}
+_cdd_target=$(find "${_cdd_arg_target}" \
+  -name node_modules -prune -o \
+  -name .git -prune -o \
+  -name .svn -prune -o \
+  -name .vscode -prune -o \
+  -type d -print | peco --on-cancel error)
+
+test -n "${_cdd_target}" && cd ${_cdd_target}
+
+unset _cdd_target
+unset _cdd_arg_target
