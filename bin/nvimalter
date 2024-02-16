@@ -3,8 +3,8 @@
 # tmux rename-window "nvim-proxy"
 
 # which nvim
-if [ -z "$VIMRUNTIME" ]; then
+if [ -z "$VIMRUNTIME" ] && [ -z "$NVIM" ]; then
   nvim $@
 else
-  nvr $@
+  nvr --remote $@
 fi
